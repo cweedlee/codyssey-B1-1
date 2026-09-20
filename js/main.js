@@ -1,14 +1,16 @@
-const GITHUB_USERNAME = "haecho";
+const GITHUB_USERNAME = "cweedlee";
 const SCROLL_TOP_THRESHOLD = 300;
 const HEADER_SCROLL_THRESHOLD = 60;
 const OBSERVER_THRESHOLD = 0.2;
 
-const state = {
+let state = {
   theme: localStorage.getItem("theme") || "light",
   repositories: [],
   projectStatus: "idle",
+  projectError: "",
   activeLanguage: "All",
   formErrors: {},
+  formSuccess: "",
 };
 
 const header = document.querySelector("[data-header]");
@@ -30,9 +32,7 @@ const applyTheme = () => {
 };
 
 const setTheme = (theme) => {
-  state.theme = theme;
-  localStorage.setItem("theme", theme);
-  applyTheme();
+  setState({ theme });
 };
 
 const toggleMenu = () => {
@@ -82,6 +82,19 @@ const getVisibleRepositories = () => {
   return state.repositories.filter(({ language }) => language === state.activeLanguage);
 };
 
+const escapeHtml = (value) =>
+  String(value).replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;",
+      })[character]
+  );
+
 const renderFilters = () => {
   const languages = getLanguages();
 
@@ -91,9 +104,9 @@ const renderFilters = () => {
         <button
           class="filter-button ${language === state.activeLanguage ? "active" : ""}"
           type="button"
-          data-language="${language}"
+          data-language="${escapeHtml(language)}"
         >
-          ${language}
+          ${escapeHtml(language)}
         </button>
       `
     )
@@ -117,13 +130,13 @@ const renderProjectCards = () => {
 
       return `
         <article class="project-card">
-          <h3>${name}</h3>
-          <p>${summary}</p>
+          <h3>${escapeHtml(name)}</h3>
+          <p>${escapeHtml(summary)}</p>
           <div class="project-meta">
-            <span>${languageLabel}</span>
-            <span>Stars: ${stars}</span>
+            <span>${escapeHtml(languageLabel)}</span>
+            <span>Stars: ${escapeHtml(stars)}</span>
           </div>
-          <a class="project-link" href="${htmlUrl}" target="_blank" rel="noreferrer">
+          <a class="project-link" href="${escapeHtml(htmlUrl)}" target="_blank" rel="noreferrer">
             GitHub에서 보기
           </a>
         </article>
@@ -148,13 +161,19 @@ const renderProjects = () => {
     return;
   }
 
+  if (state.projectStatus === "empty") {
+    filterBar.innerHTML = "";
+    projectList.innerHTML = "";
+    projectStatus.textContent = "표시할 프로젝트가 없습니다.";
+    return;
+  }
+
   renderFilters();
   renderProjectCards();
 };
 
 const fetchRepositories = async () => {
-  state.projectStatus = "loading";
-  renderProjects();
+  setState({ projectStatus: "loading", projectError: "" });
 
   try {
     const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated`);
@@ -164,17 +183,23 @@ const fetchRepositories = async () => {
     }
 
     const repositories = await response.json();
-    state.repositories = repositories
+    const visibleRepositories = repositories
       .filter(({ fork }) => !fork)
       .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
       .slice(0, 9);
-    state.projectStatus = "success";
-    state.activeLanguage = "All";
-  } catch (error) {
-    state.projectStatus = "error";
-  }
 
-  renderProjects();
+    setState({
+      repositories: visibleRepositories,
+      projectStatus: visibleRepositories.length === 0 ? "empty" : "success",
+      activeLanguage: "All",
+    });
+  } catch (error) {
+    setState({
+      repositories: [],
+      projectStatus: "error",
+      projectError: error instanceof Error ? error.message : "Unknown GitHub API error",
+    });
+  }
 };
 
 const validateForm = (formData) => {
@@ -208,20 +233,54 @@ const renderFormErrors = () => {
     error.textContent = message;
     input.setAttribute("aria-invalid", String(Boolean(message)));
   });
+
+  formSuccess.textContent = state.formSuccess;
+};
+
+const renderStateChanges = (previousState) => {
+  if (previousState.theme !== state.theme) {
+    localStorage.setItem("theme", state.theme);
+    applyTheme();
+  }
+
+  if (
+    previousState.projectStatus !== state.projectStatus ||
+    previousState.repositories !== state.repositories ||
+    previousState.activeLanguage !== state.activeLanguage
+  ) {
+    renderProjects();
+  }
+
+  if (
+    previousState.formErrors !== state.formErrors ||
+    previousState.formSuccess !== state.formSuccess
+  ) {
+    renderFormErrors();
+  }
+};
+
+const setState = (updates) => {
+  const previousState = state;
+  state = { ...state, ...updates };
+  renderStateChanges(previousState);
 };
 
 const handleFormSubmit = (event) => {
   event.preventDefault();
 
   const formData = new FormData(contactForm);
-  state.formErrors = validateForm(formData);
-  formSuccess.textContent = "";
-  renderFormErrors();
+  const formErrors = validateForm(formData);
 
-  if (Object.keys(state.formErrors).length === 0) {
+  if (Object.keys(formErrors).length === 0) {
     contactForm.reset();
-    formSuccess.textContent = "메시지가 성공적으로 준비되었습니다.";
+    setState({
+      formErrors: {},
+      formSuccess: "메시지가 성공적으로 준비되었습니다.",
+    });
+    return;
   }
+
+  setState({ formErrors, formSuccess: "" });
 };
 
 const handleFormInput = (event) => {
@@ -232,8 +291,7 @@ const handleFormInput = (event) => {
   }
 
   const formData = new FormData(contactForm);
-  state.formErrors = validateForm(formData);
-  renderFormErrors();
+  setState({ formErrors: validateForm(formData), formSuccess: "" });
 };
 
 const startTypingEffect = () => {
@@ -313,14 +371,13 @@ filterBar.addEventListener("click", (event) => {
     return;
   }
 
-  state.activeLanguage = button.dataset.language;
-  renderProjects();
+  setState({ activeLanguage: button.dataset.language });
 });
 
 contactForm.addEventListener("submit", handleFormSubmit);
 contactForm.addEventListener("input", handleFormInput);
 
-applyTheme();
+renderStateChanges({});
 handleScroll();
 observeSections();
 startTypingEffect();
