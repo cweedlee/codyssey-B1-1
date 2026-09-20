@@ -156,8 +156,11 @@ const renderProjects = () => {
   if (state.projectStatus === "error") {
     filterBar.innerHTML = "";
     projectList.innerHTML = "";
-    projectStatus.innerHTML =
-      '프로젝트를 불러올 수 없습니다. <button class="filter-button" type="button" data-inline-retry>다시 시도</button>';
+    projectStatus.innerHTML = `
+      프로젝트를 불러올 수 없습니다.
+      ${state.projectError ? `<span class="project-error-detail">${escapeHtml(state.projectError)}</span>` : ""}
+      <button class="filter-button" type="button" data-inline-retry>다시 시도</button>
+    `;
     return;
   }
 
@@ -176,10 +179,23 @@ const fetchRepositories = async () => {
   setState({ projectStatus: "loading", projectError: "" });
 
   try {
-    const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated`);
+    const response = await fetch(
+      `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`,
+      {
+        cache: "no-store",
+        headers: {
+          Accept: "application/vnd.github+json",
+        },
+      }
+    );
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
+      const message =
+        response.status === 403
+          ? "GitHub API 요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요."
+          : `GitHub API 오류가 발생했습니다. (${response.status})`;
+
+      throw new Error(message);
     }
 
     const repositories = await response.json();
@@ -197,7 +213,12 @@ const fetchRepositories = async () => {
     setState({
       repositories: [],
       projectStatus: "error",
-      projectError: error instanceof Error ? error.message : "Unknown GitHub API error",
+      projectError:
+        error instanceof TypeError
+          ? "네트워크 연결을 확인한 후 다시 시도해주세요."
+          : error instanceof Error
+            ? error.message
+            : "알 수 없는 오류가 발생했습니다.",
     });
   }
 };

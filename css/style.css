@@ -403,6 +403,12 @@ h3 {
   display: none;
 }
 
+.project-error-detail {
+  color: var(--color-error);
+  display: block;
+  margin: 0.35rem 0 0.75rem;
+}
+
 .spinner {
   animation: spin 0.8s linear infinite;
   border: 3px solid var(--color-border);
