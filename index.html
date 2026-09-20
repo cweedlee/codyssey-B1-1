@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Haecho Portfolio</title>
+    <meta
+      name="description"
+      content="HTML, CSS, JavaScript로 구현한 반응형 포트폴리오 웹사이트"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/main.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <nav class="nav" aria-label="주요 메뉴">
+        <a class="logo" href="#hero" aria-label="홈으로 이동">Haecho</a>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-label="메뉴 열기"
+          aria-expanded="false"
+          data-menu-toggle
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <ul class="nav-links" data-nav-links>
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+
+        <button class="theme-toggle" type="button" data-theme-toggle>
+          다크모드
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero section reveal" id="hero">
+        <div class="hero-content">
+          <p class="eyebrow">Front-end Portfolio</p>
+          <h1>
+            안녕하세요,
+            <span data-typing-text>사용자를 생각하는 웹을 만듭니다.</span>
+          </h1>
+          <p class="hero-copy">
+            기본기에 충실한 HTML, CSS, JavaScript로 반응형 UI와 API 기반
+            프로젝트 섹션을 직접 구현한 포트폴리오입니다.
+          </p>
+          <div class="hero-actions" aria-label="주요 이동 버튼">
+            <a class="button button-primary" href="#projects">프로젝트 보기</a>
+            <a class="button button-secondary" href="#contact">연락하기</a>
+          </div>
+        </div>
+        <aside class="hero-panel" aria-label="포트폴리오 핵심 정보">
+          <p>Current Focus</p>
+          <strong>DOM, Event, State, Render</strong>
+          <span>Vanilla JavaScript 기반 인터랙션 구현</span>
+        </aside>
+      </section>
+
+      <section class="section about reveal" id="about">
+        <div class="section-heading">
+          <p class="eyebrow">About</p>
+          <h2>꾸준히 구조를 이해하며 성장합니다.</h2>
+        </div>
+        <div class="about-layout">
+          <img
+            class="profile-image"
+            src="images/profile.svg"
+            alt="작업 책상 앞에서 웹 개발을 하는 사람 일러스트"
+          />
+          <article class="about-card">
+            <h3>나를 소개합니다</h3>
+            <p>
+              웹 페이지가 보이는 방식뿐 아니라 사용자의 행동이 상태를 바꾸고,
+              그 상태가 다시 화면으로 렌더링되는 흐름을 이해하는 데 집중하고
+              있습니다.
+            </p>
+            <p>
+              이 포트폴리오는 프레임워크 없이 시맨틱 마크업, 반응형 레이아웃,
+              API 연동, 폼 검증을 직접 연결해 만든 결과물입니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section skills reveal" id="skills">
+        <div class="section-heading">
+          <p class="eyebrow">Skills</p>
+          <h2>이번 과제에서 다루는 기술</h2>
+        </div>
+        <ul class="skill-list" aria-label="기술 스택 목록">
+          <li>
+            <strong>HTML</strong>
+            <span>시맨틱 구조, 접근성, 폼 레이블</span>
+          </li>
+          <li>
+            <strong>CSS</strong>
+            <span>Flexbox, Grid, 반응형, 다크모드 변수</span>
+          </li>
+          <li>
+            <strong>JavaScript</strong>
+            <span>DOM, 이벤트, 상태, 렌더링</span>
+          </li>
+          <li>
+            <strong>API</strong>
+            <span>fetch, async/await, 로딩/에러 처리</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="section projects reveal" id="projects">
+        <div class="section-heading section-heading-row">
+          <div>
+            <p class="eyebrow">Projects</p>
+            <h2>GitHub 저장소</h2>
+          </div>
+          <button class="button button-secondary compact" type="button" data-retry>
+            다시 불러오기
+          </button>
+        </div>
+
+        <div class="filter-bar" data-filter-bar aria-label="프로젝트 필터"></div>
+        <div class="project-status" data-project-status role="status"></div>
+        <div class="project-grid" data-project-list></div>
+      </section>
+
+      <section class="section contact reveal" id="contact">
+        <div class="section-heading">
+          <p class="eyebrow">Contact</p>
+          <h2>함께 만들 이야기를 남겨주세요.</h2>
+        </div>
+
+        <form class="contact-form" novalidate data-contact-form>
+          <div class="form-field">
+            <label for="name">이름</label>
+            <input id="name" name="name" type="text" autocomplete="name" />
+            <p class="field-error" data-error-for="name"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="email">이메일</label>
+            <input id="email" name="email" type="email" autocomplete="email" />
+            <p class="field-error" data-error-for="email"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="message">메시지</label>
+            <textarea id="message" name="message" rows="5"></textarea>
+            <p class="field-error" data-error-for="message"></p>
+          </div>
+
+          <button class="button button-primary" type="submit">보내기</button>
+          <p class="form-success" data-form-success role="status"></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>&copy; 2026 Haecho. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://github.com/haecho" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com" target="_blank" rel="noreferrer">
+          LinkedIn
+        </a>
+      </div>
+    </footer>
+
+    <button class="scroll-top" type="button" aria-label="맨 위로 이동" data-scroll-top>
+      ↑
+    </button>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">웹 개발 프로필 일러스트</title>
+  <desc id="desc">노트북 앞에서 웹 페이지를 만드는 사람을 표현한 간단한 일러스트</desc>
+  <rect width="640" height="640" rx="32" fill="#fffdf8"/>
+  <circle cx="492" cy="120" r="72" fill="#f19a68" opacity=".9"/>
+  <circle cx="136" cy="504" r="94" fill="#7ec8d7" opacity=".85"/>
+  <rect x="126" y="116" width="388" height="300" rx="28" fill="#176b87"/>
+  <rect x="154" y="150" width="332" height="214" rx="14" fill="#f7f3ea"/>
+  <path d="M210 222h118M210 268h220M210 314h160" stroke="#b8442c" stroke-width="20" stroke-linecap="round"/>
+  <path d="M258 416h124l24 62H234l24-62Z" fill="#0f5268"/>
+  <rect x="174" y="478" width="292" height="34" rx="17" fill="#242424"/>
+  <circle cx="320" cy="142" r="52" fill="#f2c0a2"/>
+  <path d="M252 160c14-66 110-88 146-18-14 10-38 14-72 10-28-4-52 0-74 8Z" fill="#242424"/>
+  <path d="M232 400c18-76 64-116 88-116s70 40 88 116H232Z" fill="#f19a68"/>
+  <path d="M286 300c8 18 60 18 68 0v74h-68v-74Z" fill="#f2c0a2"/>
+  <path d="M254 400h132l-28 78h-76l-28-78Z" fill="#ffffff"/>
+</svg>
